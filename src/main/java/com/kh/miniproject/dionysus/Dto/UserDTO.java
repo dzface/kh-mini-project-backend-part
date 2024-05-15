@@ -6,7 +6,7 @@ import java.sql.Date;
 
 @Getter
 @Setter
-public class MemberDTO {
+public class UserDTO {
     private String id;
     private String pw;
     private String name;
@@ -14,5 +14,4 @@ public class MemberDTO {
     private String nick;
     private String phone;
     private String address;
-    private Date join;
 }

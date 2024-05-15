@@ -2,12 +2,12 @@ package com.kh.miniproject.dionysus.Dao;
 
 
 import com.kh.miniproject.dionysus.Utils.Common;
-import com.kh.miniproject.dionysus.Dto.MemberDTO;
+import com.kh.miniproject.dionysus.Dto.UserDTO;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemberDAO {
+public class UserDAO {
     
     private Connection conn = null;
     private Statement stmt = null;
@@ -15,12 +15,12 @@ public class MemberDAO {
     private PreparedStatement pStmt = null;
 
     // 회원 가입 여부 확인
-    public boolean regMemberCheck(String USER_ID) {
+    public boolean regMemberCheck(String id) {
         boolean isNotReg = false;
         try {
             conn = Common.getConnection();
             stmt = conn.createStatement();
-            String sql = "SELECT * FROM MEMBER_TB WHERE ID = " + "'" + USER_ID +"'";
+            String sql = "SELECT * FROM MEMBER_TB WHERE USER_ID = " + "'" + id +"'";
             rs = stmt.executeQuery(sql);
             if(rs.next()) isNotReg = false;
             else isNotReg = true;
@@ -37,7 +37,7 @@ public class MemberDAO {
         try {
             conn = Common.getConnection();
             stmt = conn.createStatement(); // Statement 객체 얻기
-            String sql = "SELECT * FROM MEMBER_TB WHERE ID = " + "'" + id + "'";
+            String sql = "SELECT * FROM MEMBER_TB WHERE USER_ID = " + "'" + id + "'";
             rs = stmt.executeQuery(sql);
 
             while(rs.next()) { // 읽은 데이타가 있으면 true
@@ -62,28 +62,26 @@ public class MemberDAO {
     }
 
     // 회원정보 조회
-    public List<MemberDTO> memberSelect(String getName) {
-        List<MemberDTO> list = new ArrayList<>();
+    public List<UserDTO> memberSelect(String getName) {
+        List<UserDTO> list = new ArrayList<>();
         String sql = null;
         System.out.println("NAME : " + getName);
         try {
             conn = Common.getConnection();
             stmt = conn.createStatement();
             if(getName.equals("ALL")) sql = "SELECT * FROM MEMBER_TB";
-            else sql = "SELECT * FROM MEMBER_TB WHERE ID = " + "'" + getName + "'";
+            else sql = "SELECT * FROM MEMBER_TB WHERE USER_NAME = " + "'" + getName + "'";
             rs = stmt.executeQuery(sql);
 
             while(rs.next()) {
-                String id = rs.getString("ID");
-                String pw = rs.getString("PW");
-                String name = rs.getString("NAME");
-                String jumin = rs.getString("JUMIN");
-                String nick = rs.getString("NICK");
-                String phone = rs.getString("PHONE");
-                String address = rs.getString("ADDRESS");
-                Date join = rs.getDate("JOIN");
-
-                MemberDTO dto = new MemberDTO();
+                String id = rs.getString("USER_ID");
+                String pw = rs.getString("USER_PW");
+                String name = rs.getString("USER_NAME");
+                String jumin = rs.getString("USER_JUMIN");
+                String nick = rs.getString("USER_NICK");
+                String phone = rs.getString("USER_PHONE");
+                String address = rs.getString("USER_ADDRESS");
+                UserDTO dto = new UserDTO();
                 dto.setId(id);
                 dto.setPw(pw);
                 dto.setName(name);
@@ -91,7 +89,6 @@ public class MemberDAO {
                 dto.setNick(nick);
                 dto.setPhone(phone);
                 dto.setAddress(address);
-                dto.setJoin(join);
                 list.add(dto);
             }
             Common.close(rs);
@@ -104,16 +101,19 @@ public class MemberDAO {
     }
 
     // 회원 가입
-    public boolean memberRegister(String id, String pwd, String name, String mail) {
+    public boolean userRegister(String id, String pwd, String name, String jumin, String nick, String phone, String address) {
         int result = 0;
-        String sql = "INSERT INTO MEMBER_TB(ID, PWD, NAME, EMAIL, JOIN) VALUES(?, ?, ?, ?, SYSDATE)";
+        String sql = "INSERT INTO MEMBER_TB(USER_ID, USER_PW, USER_NAME, USER_JUMIN, USER_NICK, USER_PHONE, USER_ADDRESS) VALUES(?, ?, ?, ?, ?, ?, ?)";
         try {
             conn = Common.getConnection();
             pStmt = conn.prepareStatement(sql);
             pStmt.setString(1, id);
             pStmt.setString(2, pwd);
             pStmt.setString(3, name);
-            pStmt.setString(4, mail);
+            pStmt.setString(4, jumin);
+            pStmt.setString(5, nick);
+            pStmt.setString(6, phone);
+            pStmt.setString(7, address);
             result = pStmt.executeUpdate();
             System.out.println("회원 가입 DB 결과 확인 : " + result);
 
