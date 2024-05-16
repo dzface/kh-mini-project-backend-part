@@ -45,7 +45,25 @@ public class UserController {
         boolean isTrue = dao.regMemberCheck(id);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
-
+    // GET : 이름 주민번호 받아서 아이디 조회
+    @GetMapping("/findid")
+    public ResponseEntity<List<UserDTO>> memberList(@RequestParam String name, String jumin) {
+        System.out.println("NAME : " + name);
+        System.out.println("JUMIN : " + jumin);
+        UserDAO dao = new UserDAO();
+        List<UserDTO> list = dao.findIDMethod(name, jumin);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+    // GET : 아이디 이름 주민번호 받아서 비밀번호
+    @GetMapping("/findpw")
+    public ResponseEntity<List<UserDTO>> memberList(@RequestParam String id, String name, String jumin) {
+        System.out.println("ID : " + id);
+        System.out.println("NAME : " + name);
+        System.out.println("JUMIN : " + jumin);
+        UserDAO dao = new UserDAO();
+        List<UserDTO> list = dao.findPWMethod(id, name, jumin);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
     // POST : 회원 가입
     @PostMapping("/signup")
     public ResponseEntity<Boolean> memberRegister(@RequestBody UserDTO GenerateUser) {

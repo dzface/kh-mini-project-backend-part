@@ -99,7 +99,73 @@ public class UserDAO {
         }
         return list;
     }
+    //아이디 찾기
+    public List<UserDTO> findIDMethod(String getName, String getJumin) {
+        List<UserDTO> list = new ArrayList<>();
+        String sql = null;
+        System.out.println("NAME : " + getName);
+        System.out.println("JUMIN : " + getJumin);
+        try {
+            conn = Common.getConnection();
+            if(getName.equals("ALL")) sql = "SELECT * FROM MEMBER_TB";
+            else {
+                sql = "SELECT USER_ID FROM MEMBER_TB WHERE USER_NAME = ? AND USER_JUMIN=?";
+                pStmt = conn.prepareStatement(sql);
+                pStmt.setString(1, getName);
+                pStmt.setString(2, getJumin);
+                rs = pStmt.executeQuery();
+            }
 
+            while(rs.next()) {
+                String id = rs.getString("USER_ID");
+                UserDTO dto = new UserDTO();
+                dto.setId(id);
+                list.add(dto);
+            }
+            Common.close(rs);
+            Common.close(stmt);
+            Common.close(conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    // 비밀번호 찾기
+    public List<UserDTO> findPWMethod(String getId, String getName, String getJumin) {
+        List<UserDTO> list = new ArrayList<>();
+        String sql = null;
+        System.out.println("ID : "+ getId);
+        System.out.println("NAME : " + getName);
+        System.out.println("JUMIN : " + getJumin);
+        try {
+            conn = Common.getConnection();
+
+            if(getName.equals("ALL")) {
+                sql = "SELECT * FROM MEMBER_TB";
+                pStmt = conn.prepareStatement(sql);
+            }
+            else {
+                sql = "SELECT USER_ID FROM MEMBER_TB WHERE USER_ID = ? AND USER_NAME = ? AND USER_JUMIN=?";
+                pStmt = conn.prepareStatement(sql);
+                pStmt.setString(1, getId);
+                pStmt.setString(2, getName);
+                pStmt.setString(3, getJumin);
+                rs = pStmt.executeQuery();
+            }
+            while(rs.next()) {
+                String pw = rs.getString("USER_PW");
+                UserDTO dto = new UserDTO();
+                dto.setPw(pw);
+                list.add(dto);
+            }
+            Common.close(rs);
+            Common.close(stmt);
+            Common.close(conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
     // 회원 가입
     public boolean userRegister(UserDTO user) {
         int result = 0;
@@ -144,5 +210,4 @@ public class UserDAO {
         if(result == 1) return true;
         else return false;
     }
-
 }
