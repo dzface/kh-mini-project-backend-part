@@ -98,6 +98,36 @@ public class UserDAO {
         }
         return list;
     }
+    // 로그인 단계
+    // 1. 프론트로부터 받은 아이디 비번을 DB 정보와 조회
+    // 2. 있는 것으로 확인 되면 아이디 비번을 다시 반환해주기
+    public List<UserDTO> regMemberCheck(String id, String pw) {
+        List<UserDTO> loginResult = new ArrayList<>();
+        boolean isNotReg = false;
+        String user_id = null;
+        String user_pw = null;
+        try {
+            conn = Common.getConnection();
+            stmt = conn.createStatement();
+            String sql = "SELECT USER_ID, USER_PW FROM MEMBER_TB WHERE USER_ID = " + "'" + id +"' AND USER_PW = "+ "'"+pw+"'";
+            rs = stmt.executeQuery(sql);
+            if(rs.next()) {
+                user_id = rs.getString("USER_ID");
+                user_pw = rs.getString("USER_PW");
+                UserDTO dto = new UserDTO();
+                dto.setId(id);
+                dto.setPw(pw);
+                loginResult.add(dto);
+                isNotReg = false;
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(rs);
+        Common.close(stmt);
+        Common.close(conn);
+        return loginResult;
+    }
     //아이디 찾기
     public String findIDMethod(String getName, String getJumin) {
         String sql = "SELECT USER_ID FROM MEMBER_TB WHERE USER_NAME = ? AND USER_JUMIN=?";
