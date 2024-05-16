@@ -101,19 +101,19 @@ public class UserDAO {
     }
 
     // 회원 가입
-    public boolean userRegister(String id, String pwd, String name, String jumin, String nick, String phone, String address) {
+    public boolean userRegister(UserDTO user) {
         int result = 0;
         String sql = "INSERT INTO MEMBER_TB(USER_ID, USER_PW, USER_NAME, USER_JUMIN, USER_NICK, USER_PHONE, USER_ADDRESS) VALUES(?, ?, ?, ?, ?, ?, ?)";
         try {
             conn = Common.getConnection();
             pStmt = conn.prepareStatement(sql);
-            pStmt.setString(1, id);
-            pStmt.setString(2, pwd);
-            pStmt.setString(3, name);
-            pStmt.setString(4, jumin);
-            pStmt.setString(5, nick);
-            pStmt.setString(6, phone);
-            pStmt.setString(7, address);
+            pStmt.setString(1, user.getId());
+            pStmt.setString(2, user.getPw());
+            pStmt.setString(3, user.getName());
+            pStmt.setString(4, user.getJumin());
+            pStmt.setString(5, user.getNick());
+            pStmt.setString(6, user.getPhone());
+            pStmt.setString(7, user.getAddress());
             result = pStmt.executeUpdate();
             System.out.println("회원 가입 DB 결과 확인 : " + result);
 
@@ -127,9 +127,9 @@ public class UserDAO {
         else return false;
     }
 
-    public boolean memberDelete(String id) {
+    public boolean userDeleteMethod(String id) {
         int result = 0;
-        String sql = "DELETE FROM MEMBER_TB WHERE ID = ?";
+        String sql = "DELETE FROM MEMBER_TB WHERE USER_ID = ?";
 
         try {
             conn = Common.getConnection();

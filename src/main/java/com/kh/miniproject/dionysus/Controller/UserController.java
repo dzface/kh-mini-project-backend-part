@@ -2,6 +2,7 @@ package com.kh.miniproject.dionysus.Controller;
 
 import com.kh.miniproject.dionysus.Dao.UserDAO;
 import com.kh.miniproject.dionysus.Dto.UserDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,11 +13,11 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/users")
-
+@Slf4j //롬복내장 디버깅 어노테이션
 public class UserController {
 
     // GET : 회원 조회
-    @GetMapping("/member")
+    @GetMapping("/search-user")
     public ResponseEntity<List<UserDTO>> memberList(@RequestParam String name) {
         System.out.println("NAME : " + name);
         UserDAO dao = new UserDAO();
@@ -46,26 +47,20 @@ public class UserController {
     }
 
     // POST : 회원 가입
-    @PostMapping("/new")
-    public ResponseEntity<Boolean> memberRegister(@RequestBody Map<String, String> regData) {
-        String getId = regData.get("id");
-        String getPwd = regData.get("pwd");
-        String getName = regData.get("name");
-        String getjumin = regData.get("jumin");
-        String getnick = regData.get("nick");
-        String getphone = regData.get("phone");
-        String getaddress = regData.get("address");
+    @PostMapping("/signup")
+    public ResponseEntity<Boolean> memberRegister(@RequestBody UserDTO GenerateUser) {
+
         UserDAO dao = new UserDAO();
-        boolean isTrue = dao.userRegister(getId, getPwd, getName, getjumin, getnick, getphone, getaddress);
+        boolean isTrue = dao.userRegister(GenerateUser);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 
     // POST : 회원 탈퇴
-    @PostMapping("/del")
-    public ResponseEntity<Boolean> memberDelete(@RequestBody Map<String, String> delData) {
-        String getId = delData.get("id");
+    @PostMapping("/delete-user")
+    public ResponseEntity<Boolean> userDeleteMethod(@RequestBody Map<String, String> delUser) {
+        String getId = delUser.get("id");
         UserDAO dao = new UserDAO();
-        boolean isTrue = dao.memberDelete(getId);
+        boolean isTrue = dao.userDeleteMethod(getId);
         return new ResponseEntity<>(isTrue, HttpStatus.OK);
     }
 }
