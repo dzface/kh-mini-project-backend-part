@@ -1,6 +1,5 @@
 package com.kh.miniproject.dionysus.Dao;
 
-
 import com.kh.miniproject.dionysus.Utils.Common;
 import com.kh.miniproject.dionysus.Dto.UserDTO;
 import java.sql.*;
@@ -100,71 +99,60 @@ public class UserDAO {
         return list;
     }
     //아이디 찾기
-    public List<UserDTO> findIDMethod(String getName, String getJumin) {
-        List<UserDTO> list = new ArrayList<>();
-        String sql = null;
+    public String findIDMethod(String getName, String getJumin) {
+        String sql = "SELECT USER_ID FROM MEMBER_TB WHERE USER_NAME = ? AND USER_JUMIN=?";
+        String user_id = null;
         System.out.println("NAME : " + getName);
         System.out.println("JUMIN : " + getJumin);
         try {
             conn = Common.getConnection();
-            if(getName.equals("ALL")) sql = "SELECT * FROM MEMBER_TB";
-            else {
-                sql = "SELECT USER_ID FROM MEMBER_TB WHERE USER_NAME = ? AND USER_JUMIN=?";
-                pStmt = conn.prepareStatement(sql);
-                pStmt.setString(1, getName);
-                pStmt.setString(2, getJumin);
-                rs = pStmt.executeQuery();
-            }
-
+            pStmt = conn.prepareStatement(sql);
+            pStmt.setString(1, getName);
+            pStmt.setString(2, getJumin);
+            rs = pStmt.executeQuery();
             while(rs.next()) {
-                String id = rs.getString("USER_ID");
-                UserDTO dto = new UserDTO();
-                dto.setId(id);
-                list.add(dto);
+                user_id = rs.getString("USER_ID");
             }
             Common.close(rs);
             Common.close(stmt);
             Common.close(conn);
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            Common.close(rs);
+            Common.close(pStmt);
+            Common.close(conn);
         }
-        return list;
+        return user_id;
     }
     // 비밀번호 찾기
-    public List<UserDTO> findPWMethod(String getId, String getName, String getJumin) {
-        List<UserDTO> list = new ArrayList<>();
-        String sql = null;
+    public String findPWMethod(String getId, String getName, String getJumin) {
         System.out.println("ID : "+ getId);
         System.out.println("NAME : " + getName);
         System.out.println("JUMIN : " + getJumin);
+        String user_pw = null;
+        String sql = "SELECT USER_PW FROM MEMBER_TB WHERE USER_ID = ? AND USER_NAME = ? AND USER_JUMIN=?";
         try {
             conn = Common.getConnection();
 
-            if(getName.equals("ALL")) {
-                sql = "SELECT * FROM MEMBER_TB";
-                pStmt = conn.prepareStatement(sql);
+            pStmt = conn.prepareStatement(sql);
+            pStmt.setString(1, getId);
+            pStmt.setString(2, getName);
+            pStmt.setString(3, getJumin);
+            rs = pStmt.executeQuery();
+            while(rs.next()){
+                user_pw = rs.getString("USER_PW");
             }
-            else {
-                sql = "SELECT USER_ID FROM MEMBER_TB WHERE USER_ID = ? AND USER_NAME = ? AND USER_JUMIN=?";
-                pStmt = conn.prepareStatement(sql);
-                pStmt.setString(1, getId);
-                pStmt.setString(2, getName);
-                pStmt.setString(3, getJumin);
-                rs = pStmt.executeQuery();
-            }
-            while(rs.next()) {
-                String pw = rs.getString("USER_PW");
-                UserDTO dto = new UserDTO();
-                dto.setPw(pw);
-                list.add(dto);
-            }
-            Common.close(rs);
-            Common.close(stmt);
-            Common.close(conn);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return list;
+        finally {
+            Common.close(rs);
+            Common.close(pStmt);
+            Common.close(conn);
+        }
+        return user_pw;
     }
     // 회원 가입
     public boolean userRegister(UserDTO user) {
